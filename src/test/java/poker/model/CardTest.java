@@ -10,8 +10,6 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
-import com.sun.tools.javac.util.List;
-
 public class CardTest {
 
 	@Test

@@ -2,14 +2,27 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.sermo-de-arboribus</groupId>
 	<artifactId>poker</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>Poker</name>
 	<description>A small library for evaluating poker hands</description>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
+		<junit.jupiter.version>5.9.1</junit.jupiter.version>
+		<junit.platform.version>1.8.1</junit.platform.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>5.9.1</version>
+			<version>${junit.jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-runner</artifactId>
+			<version>${junit.platform.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
