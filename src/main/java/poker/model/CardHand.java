@@ -1,7 +1,5 @@
 package poker.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,10 +77,10 @@ public class CardHand {
 		
 		int comparisonResult = this.getRank().compareTo(otherHand.getRank()); 
 		if(comparisonResult > 0) {
-			System.out.println("Hand 1 has won, holding " + this.toString());
+			System.out.println("Hand 1 has won, holding a " + this.getRank() + " with cards " + this.toString());
 			return this;
 		} else if(comparisonResult < 0) {
-			System.out.println("Hand 2 has won, holding " + otherHand.toString());
+			System.out.println("Hand 2 has won, holding a " + otherHand.getRank() + " with cards " + otherHand.toString());
 			return otherHand;
 		} else {
 			// TODO: compute the winner among equally ranked hands
@@ -101,6 +99,19 @@ public class CardHand {
 		return rank;
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[ ");
+		for ( Card card : hand ) {
+			sb.append("(");
+			sb.append(card.toString());
+			sb.append(") ");
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+	
 	/************************ Private methods *************************/
 	
 	/**
@@ -110,10 +121,10 @@ public class CardHand {
 		
 		// initialize temp variables for maintaining state while iterating through cards
 		Map<CardValue, Integer> values = new HashMap<CardValue, Integer>();
-		List<Integer> intValues = new ArrayList<Integer>(); 
 		
 		Card previousCard = null;
 		int potentialFlush = 1;
+		boolean potentialStraight = true; 
 		
 		for (Card card : hand) {
 			
@@ -124,23 +135,17 @@ public class CardHand {
 				values.put(currentValue, 1);
 			}
 			
-			intValues.add(currentValue.getIntValue());
-			
 			if(null != previousCard && previousCard.getCardSuit() == card.getCardSuit()) {
 				potentialFlush++;
 			}
 			
-			previousCard = card;
-		}
-		
-		Collections.sort(intValues);
-		boolean potentialStraight = true;
-		for (int i = 1; i < intValues.size(); i++) {
-			if(intValues.get(i-1) != intValues.get(i) - 1) {
+			if(null != previousCard && previousCard.getCardValue().getIntValue() != card.getCardValue().getIntValue() -1) {
 				potentialStraight = false;
 			}
+			
+			previousCard = card;
 		}
-		
+
 		setRank(values, potentialFlush, potentialStraight);
 	}
 

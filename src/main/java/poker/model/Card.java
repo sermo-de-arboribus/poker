@@ -20,11 +20,11 @@ public class Card implements Comparable<Card> {
 
 	public int compareTo(final Card other) {
 		
-		if(suit.compareTo(other.suit) == 0) {
-			return value.compareTo(other.value);
-		} else {
+		if(value.compareTo(other.value) == 0) {
 			return suit.compareTo(other.suit);
-		}		
+		} else {
+			return value.compareTo(other.value);
+		}
 	}
 	
 	@Override
