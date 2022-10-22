@@ -245,11 +245,18 @@ public class CardHandTest {
 					new Card(CardSuit.S, CardValue._4),
 					new Card(CardSuit.S, CardValue._2),
 					new Card(CardSuit.H, CardValue._4));
+			CardHand hand4 = new CardHand(
+					new Card(CardSuit.D, CardValue.A),
+					new Card(CardSuit.C, CardValue.A), 
+					new Card(CardSuit.S, CardValue._7),
+					new Card(CardSuit.S, CardValue._5),
+					new Card(CardSuit.H, CardValue._7));
 			
 			// act + assert
 			assertTrue(hand1.rankAgainst(hand2) == hand2);
 			assertTrue(hand1.rankAgainst(hand3) == hand1);
 			assertTrue(hand2.rankAgainst(hand3) == hand2);
+			assertTrue(hand2.rankAgainst(hand4) == hand4);
 		}
 	}
 }

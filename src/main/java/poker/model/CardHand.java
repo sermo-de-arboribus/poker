@@ -6,11 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableSet;
-import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 import poker.error.ExpectedSingleCardValueException;
 import poker.error.HandSizeError;
@@ -97,23 +93,28 @@ public class CardHand {
 			
 			switch(this.getRank()) {
 			
-				case TWO_PAIRS:
-					
-					highestRelevantValueForThis = findHighestPairValue(this.hand);
-					highestRelevantValueForOther = findHighestPairValue(otherHand.hand);
-					comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
+				case PAIR:
+					comparisonResult = compareTwoHighestPairs(otherHand);
 					
 					if (comparisonResult == 0) {
-						highestRelevantValueForThis = findSecondHighestPairValue(this.hand);
-						highestRelevantValueForOther = findSecondHighestPairValue(otherHand.hand);
-						comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
+						
+					}
+					
+					break;
+					
+				case TWO_PAIRS:
+					
+					comparisonResult = compareTwoHighestPairs(otherHand);
+					
+					if (comparisonResult == 0) {
+						comparisonResult = compareSecondHighestPairs(otherHand);
 						
 						if(comparisonResult == 0) {
 							int highestSingleCardForThis;
 							int highestSingleCardForOther;
 							try {
 								highestSingleCardForThis = findHighestSingleCardValue(this.hand);
-								highestSingleCardForOther = findHighestSingleCardValue(this.hand);
+								highestSingleCardForOther = findHighestSingleCardValue(otherHand.hand);
 								comparisonResult = highestSingleCardForThis - highestSingleCardForOther;
 							} catch (ExpectedSingleCardValueException e) {
 								System.out.println(e.getMessage());
@@ -133,9 +134,7 @@ public class CardHand {
 
 				case FOUR_OF_A_KIND:
 
-					highestRelevantValueForThis = findHighestPairValue(this.hand);
-					highestRelevantValueForOther = findHighestPairValue(otherHand.hand);
-					comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;					
+				comparisonResult = compareTwoHighestPairs(otherHand);					
 					break;
 				
 				// default ranking works for Flush, Straight Flush, Straight, and High Card ranks
@@ -153,6 +152,26 @@ public class CardHand {
 		} else {
 			return null;
 		}
+	}
+
+	private int compareSecondHighestPairs(CardHand otherHand) {
+		int comparisonResult;
+		int highestRelevantValueForThis;
+		int highestRelevantValueForOther;
+		highestRelevantValueForThis = findSecondHighestPairValue(this.hand);
+		highestRelevantValueForOther = findSecondHighestPairValue(otherHand.hand);
+		comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
+		return comparisonResult;
+	}
+
+	private int compareTwoHighestPairs(CardHand otherHand) {
+		int comparisonResult;
+		int highestRelevantValueForThis;
+		int highestRelevantValueForOther;
+		highestRelevantValueForThis = findHighestPairValue(this.hand);
+		highestRelevantValueForOther = findHighestPairValue(otherHand.hand);
+		comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
+		return comparisonResult;
 	}
 	
 
