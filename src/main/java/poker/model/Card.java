@@ -17,6 +17,10 @@ public class Card implements Comparable<Card> {
 	public CardValue getCardValue() {
 		return value;
 	}
+	
+	public int getIntValue() {
+		return value.getIntValue();
+	}
 
 	public int compareTo(final Card other) {
 		

@@ -129,6 +129,49 @@ public class CardHandTest {
 				assertTrue(hand1.rankAgainst(hand2) == hand2);
 			}
 		}
+		
+		@Test
+		void ensureRankingForHighest() {
+			// arrange
+			CardHand hand1 = getHighCardHand(); // contains an Ace
+			CardHand hand2 = new CardHand(new Card(CardSuit.D, CardValue.Q),
+					new Card(CardSuit.C, CardValue.K), 
+					new Card(CardSuit.S, CardValue._4),
+					new Card(CardSuit.S, CardValue._2),
+					new Card(CardSuit.H, CardValue._8));
+			
+			// act + assert
+			assertTrue(hand1.rankAgainst(hand2) == hand1);
+		}
+		
+		@Test
+		void ensureRankingForStraightFlush() {
+			// arrange
+			CardHand hand1 = getStraightFlush(CardSuit.C); // highest is Queen
+			CardHand hand2 = new CardHand(
+					new Card(CardSuit.D, CardValue._3),
+					new Card(CardSuit.D, CardValue._4), 
+					new Card(CardSuit.D, CardValue._5),
+					new Card(CardSuit.D, CardValue._6),
+					new Card(CardSuit.D, CardValue._7));
+			
+			// act + assert
+			assertTrue(hand1.rankAgainst(hand2) == hand1);
+		}
+		
+		@Test
+		void ensureRankingForFours() {
+			CardHand hand1 = getFourOfAKind(); // four Threes
+			CardHand hand2 = new CardHand(
+					new Card(CardSuit.D, CardValue._8),
+					new Card(CardSuit.D, CardValue._5), 
+					new Card(CardSuit.C, CardValue._8),
+					new Card(CardSuit.H, CardValue._8),
+					new Card(CardSuit.S, CardValue._8));
+			
+			// act + assert
+			assertTrue(hand1.rankAgainst(hand2) == hand2);
+		}		
 	}
 	
 }

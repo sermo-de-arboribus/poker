@@ -1,10 +1,11 @@
 package poker.model;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.SortedSet;
+import java.util.NavigableSet;
 import java.util.TreeSet;
 
 import poker.error.HandSizeError;
@@ -16,7 +17,7 @@ import poker.error.HandSizeError;
  */
 public class CardHand {
 
-	private SortedSet<Card> hand = new TreeSet<Card>();
+	private NavigableSet<Card> hand = new TreeSet<Card>();
 	private Rank rank = Rank.HIGH_CARD;
 	
 	/************************ Constructors ****************************/
@@ -67,6 +68,13 @@ public class CardHand {
 	/************************ Public methods ***********************/
 	
 	/**
+	 * 
+	 */
+	public Card getHighestCard() {
+		return hand.last();
+	}
+	
+	/**
 	 * Compares another hand to this object's hand and returns the winner. Also prints a message about the winning hand to 
 	 * the standard output console.
 	 * 
@@ -75,7 +83,26 @@ public class CardHand {
 	 */
 	public CardHand rankAgainst(CardHand otherHand) {
 		
-		int comparisonResult = this.getRank().compareTo(otherHand.getRank()); 
+		int comparisonResult = this.getRank().compareTo(otherHand.getRank());
+		
+		// if both hands have the same rank, we need to compare again, this time for the relevant highest card values
+		if(comparisonResult == 0) {
+			
+			switch(this.getRank()) {
+				case FOUR_OF_A_KIND:
+					
+					Iterator<Card> iterator = hand.descendingIterator();
+					int highestRelevantValueForThis = findHighestPairValue(iterator);
+					iterator = otherHand.hand.descendingIterator();
+					int highestRelevantValueForOther = findHighestPairValue(iterator);
+					comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;					
+					break;
+					
+				default:
+					comparisonResult = this.getHighestCard().getIntValue() - otherHand.getHighestCard().getIntValue();
+			}
+		}
+
 		if(comparisonResult > 0) {
 			System.out.println("Hand 1 has won, holding a " + this.getRank() + " with cards " + this.toString());
 			return this;
@@ -83,10 +110,8 @@ public class CardHand {
 			System.out.println("Hand 2 has won, holding a " + otherHand.getRank() + " with cards " + otherHand.toString());
 			return otherHand;
 		} else {
-			// TODO: compute the winner among equally ranked hands
+			return null;
 		}
-		
-		return this;
 	}
 	
 
@@ -139,7 +164,7 @@ public class CardHand {
 				potentialFlush++;
 			}
 			
-			if(null != previousCard && previousCard.getCardValue().getIntValue() != card.getCardValue().getIntValue() -1) {
+			if(null != previousCard && previousCard.getIntValue() != card.getIntValue() -1) {
 				potentialStraight = false;
 			}
 			
@@ -149,6 +174,21 @@ public class CardHand {
 		setRank(values, potentialFlush, potentialStraight);
 	}
 
+	public int findHighestPairValue(Iterator<Card> iterator) {
+		Card previousCard = null;
+		int highestRelevantValue = -1;
+		while(iterator.hasNext()) {
+			Card currentCard = iterator.next();
+			if(null != previousCard && previousCard.getCardValue().equals(currentCard.getCardValue())) {
+				highestRelevantValue = currentCard.getIntValue();
+				break;
+			} else {
+				previousCard = currentCard;
+			}
+		}
+		return highestRelevantValue;
+	}
+	
 	private void resetHand(final Card[] cards) throws HandSizeError {
 		hand.clear();
 		if(cards.length == 5) {
