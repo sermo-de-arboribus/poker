@@ -1,6 +1,7 @@
 package poker.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static poker.test.helpers.CardHandTestUtils.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -10,12 +11,7 @@ public class CardHandTest {
 	void recognizeStraightFlush() {
 		CardSuit suit = CardSuit.C;
 		// arrange
-		CardHand hand = new CardHand(
-				new Card(suit, CardValue.T),
-				new Card(suit, CardValue._8), 
-				new Card(suit, CardValue.Q),
-				new Card(suit, CardValue.J),
-				new Card(suit, CardValue._9));
+		CardHand hand = getStraightFlush(suit);
 		
 		// assert
 		assertEquals(hand.getRank(), Rank.STRAIGHT_FLUSH);
@@ -25,12 +21,7 @@ public class CardHandTest {
 	void recognizeFourOfAKind() {
 
 		// arrange
-		CardHand hand = new CardHand(
-				new Card(CardSuit.D, CardValue._3),
-				new Card(CardSuit.D, CardValue._8), 
-				new Card(CardSuit.C, CardValue._3),
-				new Card(CardSuit.H, CardValue._3),
-				new Card(CardSuit.S, CardValue._3));
+		CardHand hand = getFourOfAKind();
 		
 		// assert
 		assertEquals(hand.getRank(), Rank.FOUR_OF_A_KIND);
@@ -40,12 +31,7 @@ public class CardHandTest {
 	void recognizeFullHouse() {
 		
 		// arrange
-		CardHand hand = new CardHand(
-				new Card(CardSuit.D, CardValue._3),
-				new Card(CardSuit.D, CardValue._8), 
-				new Card(CardSuit.C, CardValue._3),
-				new Card(CardSuit.H, CardValue._3),
-				new Card(CardSuit.S, CardValue._8));
+		CardHand hand = getFullHouse();
 		
 		// assert
 		assertEquals(hand.getRank(), Rank.FULL_HOUSE);
@@ -55,12 +41,7 @@ public class CardHandTest {
 	void recognizeFlush() {
 		
 		// arrange
-		CardHand hand = new CardHand(
-				new Card(CardSuit.D, CardValue._3),
-				new Card(CardSuit.D, CardValue.A), 
-				new Card(CardSuit.D, CardValue.T),
-				new Card(CardSuit.D, CardValue._2),
-				new Card(CardSuit.D, CardValue._7));
+		CardHand hand = getFlush();
 		
 		// assert
 		assertEquals(hand.getRank(), Rank.FLUSH);
@@ -70,12 +51,7 @@ public class CardHandTest {
 	void recognizeStraight() {
 		
 		// arrange
-		CardHand hand = new CardHand(
-				new Card(CardSuit.D, CardValue.T),
-				new Card(CardSuit.C, CardValue._8), 
-				new Card(CardSuit.S, CardValue.Q),
-				new Card(CardSuit.S, CardValue.J),
-				new Card(CardSuit.H, CardValue._9));
+		CardHand hand = getStraight();
 		
 		assertEquals(hand.getRank(), Rank.STRAIGHT);
 	}
@@ -84,12 +60,7 @@ public class CardHandTest {
 	void recognizeThreeOfAKind() {
 		
 		// arrange
-		CardHand hand = new CardHand(
-				new Card(CardSuit.D, CardValue.A),
-				new Card(CardSuit.C, CardValue.A), 
-				new Card(CardSuit.S, CardValue.Q),
-				new Card(CardSuit.S, CardValue.J),
-				new Card(CardSuit.H, CardValue.A));
+		CardHand hand = getThreeOfAKind();
 		
 		// assert
 		assertEquals(hand.getRank(), Rank.THREE_OF_A_KIND);
@@ -98,12 +69,7 @@ public class CardHandTest {
 	@Test
 	void recognizeTwoPairs() {
 		// arrange
-		CardHand hand = new CardHand(
-				new Card(CardSuit.D, CardValue.A),
-				new Card(CardSuit.C, CardValue.A), 
-				new Card(CardSuit.S, CardValue._4),
-				new Card(CardSuit.S, CardValue._2),
-				new Card(CardSuit.H, CardValue._4));
+		CardHand hand = getTwoPairs();
 		
 		// assert
 		assertEquals(hand.getRank(), Rank.TWO_PAIRS);
@@ -112,12 +78,7 @@ public class CardHandTest {
 	@Test
 	void recognizePairs() {
 		// arrange
-		CardHand hand = new CardHand(
-				new Card(CardSuit.D, CardValue.K),
-				new Card(CardSuit.C, CardValue.A), 
-				new Card(CardSuit.S, CardValue._4),
-				new Card(CardSuit.S, CardValue._2),
-				new Card(CardSuit.H, CardValue._4));
+		CardHand hand = getPair();
 		
 		// assert
 		assertEquals(hand.getRank(), Rank.PAIR);
@@ -126,15 +87,11 @@ public class CardHandTest {
 	@Test
 	void recognizeHighCard() {
 		// arrange
-		CardHand hand = new CardHand(
-				new Card(CardSuit.D, CardValue.Q),
-				new Card(CardSuit.C, CardValue.A), 
-				new Card(CardSuit.S, CardValue._4),
-				new Card(CardSuit.S, CardValue._2),
-				new Card(CardSuit.H, CardValue._8));
+		CardHand hand = getHighCardHand();
 		
 		// assert
 		assertEquals(hand.getRank(), Rank.HIGH_CARD);
 	}
+	
 	
 }
