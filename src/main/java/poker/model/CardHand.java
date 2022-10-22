@@ -88,13 +88,20 @@ public class CardHand {
 		// if both hands have the same rank, we need to compare again, this time for the relevant highest card values
 		if(comparisonResult == 0) {
 			
+			int highestRelevantValueForThis, highestRelevantValueForOther;
+			
 			switch(this.getRank()) {
+				case THREE_OF_A_KIND:
+				case FULL_HOUSE:
+					highestRelevantValueForThis = findHighestThreesValue(this.hand);
+					highestRelevantValueForOther = findHighestThreesValue(otherHand.hand);
+					comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
+					break;
+
 				case FOUR_OF_A_KIND:
-					
-					Iterator<Card> iterator = hand.descendingIterator();
-					int highestRelevantValueForThis = findHighestPairValue(iterator);
-					iterator = otherHand.hand.descendingIterator();
-					int highestRelevantValueForOther = findHighestPairValue(iterator);
+
+					highestRelevantValueForThis = findHighestPairValue(this.hand);
+					highestRelevantValueForOther = findHighestPairValue(otherHand.hand);
 					comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;					
 					break;
 					
@@ -174,7 +181,8 @@ public class CardHand {
 		setRank(values, potentialFlush, potentialStraight);
 	}
 
-	public int findHighestPairValue(Iterator<Card> iterator) {
+	public int findHighestPairValue(NavigableSet<Card> hand) {
+		Iterator<Card> iterator = hand.descendingIterator();
 		Card previousCard = null;
 		int highestRelevantValue = -1;
 		while(iterator.hasNext()) {
@@ -187,6 +195,18 @@ public class CardHand {
 			}
 		}
 		return highestRelevantValue;
+	}
+	
+	public int findHighestThreesValue(NavigableSet<Card> hand) {
+		// We only need to look at index position 3: The card at this position must be included in the set of Three of a Kind
+		int i = 1;
+		Iterator<Card> iterator = hand.iterator();
+		while(i < 3 && iterator.hasNext()) {
+			iterator.next();
+			i++;
+		}
+		
+		return iterator.next().getIntValue();
 	}
 	
 	private void resetHand(final Card[] cards) throws HandSizeError {

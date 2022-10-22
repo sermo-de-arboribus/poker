@@ -171,7 +171,34 @@ public class CardHandTest {
 			
 			// act + assert
 			assertTrue(hand1.rankAgainst(hand2) == hand2);
-		}		
+		}
+		
+		@Test
+		void ensureRankingForFullHouse() {
+			CardHand hand1 = getFullHouse(); // three Threes
+			CardHand hand2 = new CardHand(
+					new Card(CardSuit.D, CardValue.J),
+					new Card(CardSuit.D, CardValue._8), 
+					new Card(CardSuit.C, CardValue.J),
+					new Card(CardSuit.H, CardValue.J),
+					new Card(CardSuit.S, CardValue._8));
+			
+			// act + assert
+			assertTrue(hand1.rankAgainst(hand2) == hand2);
+		}
+		
+		@Test
+		void ensureRankingForThreeOfAKind() {
+			CardHand hand1 = getThreeOfAKind(); // three Aces
+			CardHand hand2 = new CardHand(
+					new Card(CardSuit.D, CardValue._4),
+					new Card(CardSuit.C, CardValue._4), 
+					new Card(CardSuit.S, CardValue.Q),
+					new Card(CardSuit.S, CardValue.J),
+					new Card(CardSuit.H, CardValue._4));
+			
+			// act + assert
+			assertTrue(hand1.rankAgainst(hand2) == hand1);
+		}
 	}
-	
 }
