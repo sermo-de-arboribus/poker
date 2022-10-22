@@ -17,34 +17,26 @@ public class CardHand {
 	private Rank rank = Rank.HIGH_CARD;
 	
 	public CardHand(final Card card1, final Card card2, final Card card3, final Card card4, final Card card5) {
-		hand.add(card1);
-		hand.add(card2);
-		hand.add(card3);
-		hand.add(card4);
-		hand.add(card5);
-		evaluate();
+		Card[] cards = new Card[5];
+		cards[0] = card1;
+		cards[1] = card2;
+		cards[2] = card3;
+		cards[3] = card4;
+		cards[4] = card5;
+		try {
+			resetHand(cards);
+		} catch (HandSizeError e) {
+			// length of card array is guaranteed to be 5 here, so this error condition cannot occur 
+		}
 	}
 	
 	public CardHand(final Card[] cards) throws HandSizeError {
-		if(cards.length == 5) {
-			for(Card card : cards) {
-				hand.add(card);
-				evaluate();
-			}
-		} else {
-			throw new HandSizeError(cards.length);
-		}
+		resetHand(cards);
 	}
 	
 	public CardHand(final List<Card> cards) throws HandSizeError {
-		if(cards.size() == 5) {
-			for(Card card : cards) {
-				hand.add(card);
-				evaluate();
-			}			
-		} else {
-			throw new HandSizeError(cards.size());
-		}
+		Card[] cardsArray = cards.toArray(new Card[0]);
+		resetHand(cardsArray);
 	}
 	
 	public Rank getRank() {
@@ -55,8 +47,6 @@ public class CardHand {
 	 * Contract of this class: This method should be called internally whenever the card set in the `hand` variable changes 
 	 */
 	private void evaluate() {
-		// reset to default
-		rank = Rank.HIGH_CARD;
 		
 		// initialize temp variables for maintaining state while iterating through cards
 		Map<CardValue, Integer> values = new HashMap<CardValue, Integer>();
@@ -91,6 +81,22 @@ public class CardHand {
 			}
 		}
 		
+		setRank(values, potentialFlush, potentialStraight);
+	}
+
+	private void resetHand(final Card[] cards) throws HandSizeError {
+		hand.clear();
+		if(cards.length == 5) {
+			for(Card card : cards) {
+				hand.add(card);
+				evaluate();
+			}
+		} else {
+			throw new HandSizeError(cards.length);
+		}
+	}
+	
+	private void setRank(Map<CardValue, Integer> values, int potentialFlush, boolean potentialStraight) {
 		if(potentialStraight && potentialFlush == 5) {
 			rank = Rank.STRAIGHT_FLUSH;
 		} else if (potentialFlush == 5) {
@@ -120,6 +126,8 @@ public class CardHand {
 					break;
 				default: // cannot occur
 			}
+		} else {
+			rank = Rank.HIGH_CARD;
 		}
 	}
 
