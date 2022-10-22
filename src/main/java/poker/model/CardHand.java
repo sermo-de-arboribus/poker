@@ -69,7 +69,10 @@ public class CardHand {
 	/************************ Public methods ***********************/
 	
 	/**
-	 * 
+	 * Returns the highest card in the current hand. If there are several cards with the same highest value, 
+	 * the card with the highest ranked CardSuit (according to the natural ordering of the CardSuit enum) is
+	 * returned
+	 * @return see above
 	 */
 	public Card getHighestCard() {
 		return hand.last();
@@ -80,7 +83,7 @@ public class CardHand {
 	 * the standard output console.
 	 * 
 	 * @param otherHand The other hand to be ranked against the current object
-	 * @return the winning hand
+	 * @return the winning hand object, or null if no precedence is defined for the two given hands
 	 */
 	public CardHand rankAgainst(CardHand otherHand) {
 		
@@ -141,6 +144,7 @@ public class CardHand {
 			System.out.println("Hand 2 has won, holding a " + otherHand.getRank() + " with cards " + otherHand.toString() + " against " + this.toString());
 			return otherHand;
 		} else {
+			System.out.println("There is no precedence defined for the two given hands " + this.toString() + " and " + otherHand.toString() + ".\nShould we call it a draw?");
 			return null;
 		}
 	}
@@ -270,7 +274,6 @@ public class CardHand {
 				values.put(currentValue, 1);
 			}
 		}
-		
 		
 		Entry<CardValue, Integer> highestSingleCardEntry = values.entrySet()
 			.stream()

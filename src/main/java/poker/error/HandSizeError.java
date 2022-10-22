@@ -1,5 +1,9 @@
 package poker.error;
 
+/**
+ * An exception that is thrown, when the CardHand being worked on has less or more than the expected five cards.
+ *
+ */
 public class HandSizeError extends Exception {
 
 	private static final long serialVersionUID = 1L;

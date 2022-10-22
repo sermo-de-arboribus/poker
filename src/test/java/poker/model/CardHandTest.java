@@ -1,5 +1,6 @@
 package poker.model;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static poker.test.helpers.CardHandTestUtils.*;
@@ -295,6 +296,16 @@ public class CardHandTest {
 			
 			// act + assert
 			assertTrue(hand1.rankAgainst(hand2) == hand1);
+		}
+		
+		@Test
+		void ensureUndefinedPrecedenceHandsReturnNull() {
+			// arrange
+			CardHand hand1 = getStraightFlush(CardSuit.C);
+			CardHand hand2 = getStraightFlush(CardSuit.D);
+			
+			// act + assert
+			assertNull(hand1.rankAgainst(hand2));
 		}
 	}
 }
