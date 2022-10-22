@@ -228,5 +228,28 @@ public class CardHandTest {
 			// act + assert
 			assertTrue(hand1.rankAgainst(hand2) == hand1);
 		}
+		
+		@Test
+		void ensureRankingForTwoPairs() {
+			// arrange
+			CardHand hand1 = getTwoPairs(); // two Aces, two Fours
+			CardHand hand2 = new CardHand(
+					new Card(CardSuit.D, CardValue.A),
+					new Card(CardSuit.C, CardValue.A), 
+					new Card(CardSuit.S, CardValue._7),
+					new Card(CardSuit.S, CardValue._2),
+					new Card(CardSuit.H, CardValue._7));
+			CardHand hand3 = new CardHand(
+					new Card(CardSuit.D, CardValue.J),
+					new Card(CardSuit.C, CardValue.J), 
+					new Card(CardSuit.S, CardValue._4),
+					new Card(CardSuit.S, CardValue._2),
+					new Card(CardSuit.H, CardValue._4));
+			
+			// act + assert
+			assertTrue(hand1.rankAgainst(hand2) == hand2);
+			assertTrue(hand1.rankAgainst(hand3) == hand1);
+			assertTrue(hand2.rankAgainst(hand3) == hand2);
+		}
 	}
 }
