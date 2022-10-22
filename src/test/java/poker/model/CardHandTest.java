@@ -188,6 +188,34 @@ public class CardHandTest {
 		}
 		
 		@Test
+		void ensureRankingForFlush() {
+			CardHand hand1 = getFlush(); // highest is Ace
+			CardHand hand2 = new CardHand(
+					new Card(CardSuit.D, CardValue._3),
+					new Card(CardSuit.D, CardValue.J), 
+					new Card(CardSuit.D, CardValue.T),
+					new Card(CardSuit.D, CardValue._2),
+					new Card(CardSuit.D, CardValue._7));
+			
+			// act + assert
+			assertTrue(hand1.rankAgainst(hand2) == hand1);
+		}
+		
+		@Test
+		void ensureRankingForStraight() {
+			CardHand hand1 = getStraight(); // highest Queen
+			CardHand hand2 = new CardHand(
+					new Card(CardSuit.D, CardValue.J),
+					new Card(CardSuit.C, CardValue._9), 
+					new Card(CardSuit.S, CardValue.K),
+					new Card(CardSuit.S, CardValue.Q),
+					new Card(CardSuit.H, CardValue.T));
+			
+			// act + assert
+			assertTrue(hand1.rankAgainst(hand2) == hand2);
+		}
+		
+		@Test
 		void ensureRankingForThreeOfAKind() {
 			CardHand hand1 = getThreeOfAKind(); // three Aces
 			CardHand hand2 = new CardHand(

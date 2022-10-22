@@ -6,8 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableSet;
+import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
+import poker.error.ExpectedSingleCardValueException;
 import poker.error.HandSizeError;
 
 /**
@@ -91,6 +96,34 @@ public class CardHand {
 			int highestRelevantValueForThis, highestRelevantValueForOther;
 			
 			switch(this.getRank()) {
+			
+				case TWO_PAIRS:
+					
+					highestRelevantValueForThis = findHighestPairValue(this.hand);
+					highestRelevantValueForOther = findHighestPairValue(otherHand.hand);
+					comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
+					
+					if (comparisonResult == 0) {
+						highestRelevantValueForThis = findSecondHighestPairValue(this.hand);
+						highestRelevantValueForOther = findSecondHighestPairValue(otherHand.hand);
+						comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
+						
+						if(comparisonResult == 0) {
+							int highestSingleCardForThis;
+							int highestSingleCardForOther;
+							try {
+								highestSingleCardForThis = findHighestSingleCardValue(this.hand);
+								highestSingleCardForOther = findHighestSingleCardValue(this.hand);
+								comparisonResult = highestSingleCardForThis - highestSingleCardForOther;
+							} catch (ExpectedSingleCardValueException e) {
+								System.out.println(e.getMessage());
+								e.printStackTrace();
+							}							
+						}
+					}
+					
+					break;
+					
 				case THREE_OF_A_KIND:
 				case FULL_HOUSE:
 					highestRelevantValueForThis = findHighestThreesValue(this.hand);
@@ -104,7 +137,8 @@ public class CardHand {
 					highestRelevantValueForOther = findHighestPairValue(otherHand.hand);
 					comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;					
 					break;
-					
+				
+				// default ranking works for Flush, Straight Flush, Straight, and High Card ranks
 				default:
 					comparisonResult = this.getHighestCard().getIntValue() - otherHand.getHighestCard().getIntValue();
 			}
@@ -181,20 +215,57 @@ public class CardHand {
 		setRank(values, potentialFlush, potentialStraight);
 	}
 
-	public int findHighestPairValue(NavigableSet<Card> hand) {
-		Iterator<Card> iterator = hand.descendingIterator();
+	public int findFirstPairValue(Iterator<Card> iterator) {
 		Card previousCard = null;
-		int highestRelevantValue = -1;
+		int pairValue = -1;
 		while(iterator.hasNext()) {
 			Card currentCard = iterator.next();
 			if(null != previousCard && previousCard.getCardValue().equals(currentCard.getCardValue())) {
-				highestRelevantValue = currentCard.getIntValue();
+				pairValue = currentCard.getIntValue();
 				break;
 			} else {
 				previousCard = currentCard;
 			}
 		}
-		return highestRelevantValue;
+		return pairValue;
+	}
+	
+	public int findHighestPairValue(NavigableSet<Card> hand) {
+		Iterator<Card> iterator = hand.descendingIterator();
+		return findFirstPairValue(iterator);
+	}
+	
+	public int findHighestSingleCardValue(NavigableSet<Card> hand) throws ExpectedSingleCardValueException {
+		Map<CardValue, Integer> values = new HashMap<CardValue, Integer>();
+		
+		for (Card card : hand) {
+			
+			CardValue currentValue = card.getCardValue();
+			if(values.containsKey(currentValue)) {
+				values.put(currentValue, values.get(currentValue) + 1);
+			} else {
+				values.put(currentValue, 1);
+			}
+		}
+		
+		CardValue singleCardValue = null;
+		
+		for(Entry<CardValue, Integer> entry : values.entrySet()) {
+			if(entry.getValue() == 1) {
+				singleCardValue = entry.getKey();
+			}
+		}
+		
+		if(null == singleCardValue) {
+			throw new ExpectedSingleCardValueException();
+		}
+		
+		return singleCardValue.getIntValue();
+	}
+	
+	public int findSecondHighestPairValue(NavigableSet<Card> hand) {
+		Iterator<Card> iterator = hand.iterator();
+		return findFirstPairValue(iterator);
 	}
 	
 	public int findHighestThreesValue(NavigableSet<Card> hand) {
