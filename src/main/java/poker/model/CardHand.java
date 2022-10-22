@@ -66,7 +66,30 @@ public class CardHand {
 		resetHand(cardsArray);
 	}
 	
-
+	/************************ Public methods ***********************/
+	
+	/**
+	 * Compares another hand to this object's hand and returns the winner. Also prints a message about the winning hand to 
+	 * the standard output console.
+	 * 
+	 * @param otherHand The other hand to be ranked against the current object
+	 * @return the winning hand
+	 */
+	public CardHand rankAgainst(CardHand otherHand) {
+		
+		int comparisonResult = this.getRank().compareTo(otherHand.getRank()); 
+		if(comparisonResult > 0) {
+			System.out.println("Hand 1 has won, holding " + this.toString());
+			return this;
+		} else if(comparisonResult < 0) {
+			System.out.println("Hand 2 has won, holding " + otherHand.toString());
+			return otherHand;
+		} else {
+			// TODO: compute the winner among equally ranked hands
+		}
+		
+		return this;
+	}
 	
 
 	/**
