@@ -24,7 +24,7 @@ public enum CardValue {
 		this.description = description;
 	}
 	
-	public int getValue() {
+	public int getIntValue() {
 		return this.value;
 	}
 	

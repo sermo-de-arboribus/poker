@@ -67,16 +67,16 @@ public class CardHand {
 		
 		for (Card card : hand) {
 			
-			CardValue currentValue = card.getValue();
+			CardValue currentValue = card.getCardValue();
 			if(values.containsKey(currentValue)) {
 				values.put(currentValue, values.get(currentValue) + 1);
 			} else {
 				values.put(currentValue, 1);
 			}
 			
-			intValues.add(currentValue.getValue());
+			intValues.add(currentValue.getIntValue());
 			
-			if(null != previousCard && previousCard.getSuit() == card.getSuit()) {
+			if(null != previousCard && previousCard.getCardSuit() == card.getCardSuit()) {
 				potentialFlush++;
 			}
 			

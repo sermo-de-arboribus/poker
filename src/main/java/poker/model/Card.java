@@ -10,11 +10,11 @@ public class Card implements Comparable<Card> {
 		this.value = value;
 	}
 
-	public CardSuit getSuit() {
+	public CardSuit getCardSuit() {
 		return suit;
 	}
 
-	public CardValue getValue() {
+	public CardValue getCardValue() {
 		return value;
 	}
 
@@ -44,5 +44,10 @@ public class Card implements Comparable<Card> {
 		} else {
 			return false;
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return this.getCardSuit().getDescription() + " " + this.getCardValue().getDescription();
 	}
 }

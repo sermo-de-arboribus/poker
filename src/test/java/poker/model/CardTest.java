@@ -91,7 +91,7 @@ public class CardTest {
 		
 		// assert
 		for(int i = 1 ; i < cards.size(); i++) {
-			assertTrue(cards.get(i - 1).getValue().getValue() + 1 == cards.get(i).getValue().getValue());
+			assertTrue(cards.get(i - 1).getCardValue().getIntValue() + 1 == cards.get(i).getCardValue().getIntValue());
 		}
 	}
 }
