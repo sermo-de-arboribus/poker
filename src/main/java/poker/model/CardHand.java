@@ -97,7 +97,7 @@ public class CardHand {
 					comparisonResult = compareTwoHighestPairs(otherHand);
 					
 					if (comparisonResult == 0) {
-						
+						comparisonResult = compareHighestSingleCard(otherHand, comparisonResult);	
 					}
 					
 					break;
@@ -110,16 +110,7 @@ public class CardHand {
 						comparisonResult = compareSecondHighestPairs(otherHand);
 						
 						if(comparisonResult == 0) {
-							int highestSingleCardForThis;
-							int highestSingleCardForOther;
-							try {
-								highestSingleCardForThis = findHighestSingleCardValue(this.hand);
-								highestSingleCardForOther = findHighestSingleCardValue(otherHand.hand);
-								comparisonResult = highestSingleCardForThis - highestSingleCardForOther;
-							} catch (ExpectedSingleCardValueException e) {
-								System.out.println(e.getMessage());
-								e.printStackTrace();
-							}							
+							comparisonResult = compareHighestSingleCard(otherHand, comparisonResult);							
 						}
 					}
 					
@@ -144,36 +135,15 @@ public class CardHand {
 		}
 
 		if(comparisonResult > 0) {
-			System.out.println("Hand 1 has won, holding a " + this.getRank() + " with cards " + this.toString());
+			System.out.println("Hand 1 has won, holding a " + this.getRank() + " with cards " + this.toString() + " against " + otherHand.toString());
 			return this;
 		} else if(comparisonResult < 0) {
-			System.out.println("Hand 2 has won, holding a " + otherHand.getRank() + " with cards " + otherHand.toString());
+			System.out.println("Hand 2 has won, holding a " + otherHand.getRank() + " with cards " + otherHand.toString() + " against " + this.toString());
 			return otherHand;
 		} else {
 			return null;
 		}
 	}
-
-	private int compareSecondHighestPairs(CardHand otherHand) {
-		int comparisonResult;
-		int highestRelevantValueForThis;
-		int highestRelevantValueForOther;
-		highestRelevantValueForThis = findSecondHighestPairValue(this.hand);
-		highestRelevantValueForOther = findSecondHighestPairValue(otherHand.hand);
-		comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
-		return comparisonResult;
-	}
-
-	private int compareTwoHighestPairs(CardHand otherHand) {
-		int comparisonResult;
-		int highestRelevantValueForThis;
-		int highestRelevantValueForOther;
-		highestRelevantValueForThis = findHighestPairValue(this.hand);
-		highestRelevantValueForOther = findHighestPairValue(otherHand.hand);
-		comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
-		return comparisonResult;
-	}
-	
 
 	/**
 	 * Get the current rank of the five cards on this hand.
@@ -198,6 +168,40 @@ public class CardHand {
 	}
 	
 	/************************ Private methods *************************/
+	
+	private int compareHighestSingleCard(CardHand otherHand, int comparisonResult) {
+		int highestSingleCardForThis;
+		int highestSingleCardForOther;
+		try {
+			highestSingleCardForThis = findHighestSingleCardValue(this.hand);
+			highestSingleCardForOther = findHighestSingleCardValue(otherHand.hand);
+			comparisonResult = highestSingleCardForThis - highestSingleCardForOther;
+		} catch (ExpectedSingleCardValueException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		return comparisonResult;
+	}
+
+	private int compareSecondHighestPairs(CardHand otherHand) {
+		int comparisonResult;
+		int highestRelevantValueForThis;
+		int highestRelevantValueForOther;
+		highestRelevantValueForThis = findSecondHighestPairValue(this.hand);
+		highestRelevantValueForOther = findSecondHighestPairValue(otherHand.hand);
+		comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
+		return comparisonResult;
+	}
+
+	private int compareTwoHighestPairs(CardHand otherHand) {
+		int comparisonResult;
+		int highestRelevantValueForThis;
+		int highestRelevantValueForOther;
+		highestRelevantValueForThis = findHighestPairValue(this.hand);
+		highestRelevantValueForOther = findHighestPairValue(otherHand.hand);
+		comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
+		return comparisonResult;
+	}
 	
 	/**
 	 * Contract of this class: This method should be called internally whenever the card set in the `hand` variable changes 
@@ -267,18 +271,19 @@ public class CardHand {
 			}
 		}
 		
-		CardValue singleCardValue = null;
 		
-		for(Entry<CardValue, Integer> entry : values.entrySet()) {
-			if(entry.getValue() == 1) {
-				singleCardValue = entry.getKey();
-			}
-		}
+		Entry<CardValue, Integer> highestSingleCardEntry = values.entrySet()
+			.stream()
+			.filter((entry) -> entry.getValue() == 1)
+			.sorted((a, b) -> b.getKey().getIntValue() - a.getKey().getIntValue())
+			.findFirst()
+			.orElse(null);
 		
-		if(null == singleCardValue) {
+		if(null == highestSingleCardEntry) {
 			throw new ExpectedSingleCardValueException();
 		}
 		
+		CardValue singleCardValue = highestSingleCardEntry.getKey();
 		return singleCardValue.getIntValue();
 	}
 	

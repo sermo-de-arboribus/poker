@@ -258,5 +258,43 @@ public class CardHandTest {
 			assertTrue(hand2.rankAgainst(hand3) == hand2);
 			assertTrue(hand2.rankAgainst(hand4) == hand4);
 		}
+		
+		@Test
+		void ensureRankingForSinglePairs() {
+			// arrange
+			CardHand hand1 = getPair(); // pair of 4, highest Ace
+			CardHand hand2 = new CardHand(
+					new Card(CardSuit.D, CardValue.K),
+					new Card(CardSuit.C, CardValue.J), 
+					new Card(CardSuit.S, CardValue._4),
+					new Card(CardSuit.S, CardValue._2),
+					new Card(CardSuit.H, CardValue._4));
+			CardHand hand3 = new CardHand(
+					new Card(CardSuit.D, CardValue.K),
+					new Card(CardSuit.C, CardValue.A), 
+					new Card(CardSuit.S, CardValue._5),
+					new Card(CardSuit.S, CardValue._2),
+					new Card(CardSuit.H, CardValue._5));
+			
+			// act + assert
+			assertTrue(hand1.rankAgainst(hand2) == hand1);
+			assertTrue(hand2.rankAgainst(hand3) == hand3);
+			assertTrue(hand1.rankAgainst(hand3) == hand3);
+		}
+
+		@Test
+		void ensureRankingForHighestCard() {
+			// arrange
+			CardHand hand1 = getHighCardHand(); // highest: Ace
+			CardHand hand2 = new CardHand(
+					new Card(CardSuit.D, CardValue.Q),
+					new Card(CardSuit.C, CardValue.T), 
+					new Card(CardSuit.S, CardValue._4),
+					new Card(CardSuit.S, CardValue._2),
+					new Card(CardSuit.H, CardValue._8));
+			
+			// act + assert
+			assertTrue(hand1.rankAgainst(hand2) == hand1);
+		}
 	}
 }
