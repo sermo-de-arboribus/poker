@@ -34,7 +34,7 @@ public class Card implements Comparable<Card> {
 
 	/**
 	 * Cards are sorted first according to their natural order (i.e. the sequence prescribed by the enum CardValue, 
-	 * which correspondends with the sequence that can be derived from getIntValue()); cards of the same value
+	 * which corresponds with the sequence that can be derived from getIntValue()); cards of the same value
 	 * are then further sorted according to the suit order defined in the CardSuit enum.
 	 */
 	public int compareTo(final Card other) {

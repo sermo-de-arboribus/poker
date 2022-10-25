@@ -1,5 +1,6 @@
 package poker.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -244,35 +245,19 @@ public class CardHand {
 
 		setRank(values, potentialFlush, potentialStraight);
 	}
-
-	public int findFirstPairValue(Iterator<Card> iterator) {
-		Card previousCard = null;
-		int pairValue = -1;
-		while(iterator.hasNext()) {
-			Card currentCard = iterator.next();
-			if(null != previousCard && previousCard.getCardValue().equals(currentCard.getCardValue())) {
-				pairValue = currentCard.getIntValue();
-				break;
-			} else {
-				previousCard = currentCard;
-			}
-		}
-		return pairValue;
-	}
 	
-	public int findFirstPairValueViaStream(NavigableSet<Card> hand) {
-	    return StreamEx.ofSubLists(hand.stream().collect(Collectors.toList()), 2, 1)
+	private int findFirstPairValue(List<Card> hand) {
+	    return StreamEx.ofSubLists(hand, 2, 1)
 	        .findFirst((subList) -> subList.get(0).getIntValue() == subList.get(1).getIntValue())
 	        .map((subList) -> subList.get(0).getIntValue())
 	        .orElse(0);
 	}
 	
-	public int findHighestPairValue(NavigableSet<Card> hand) {
-		Iterator<Card> iterator = hand.descendingIterator();
-		return findFirstPairValue(iterator);
+	private int findHighestPairValue(NavigableSet<Card> hand) {
+	    return findFirstPairValue(StreamEx.ofReversed(new ArrayList<Card>(hand)).toList());
 	}
 	
-	public int findHighestSingleCardValue(NavigableSet<Card> hand) throws ExpectedSingleCardValueException {
+	private int findHighestSingleCardValue(NavigableSet<Card> hand) throws ExpectedSingleCardValueException {
 		Map<CardValue, Integer> values = new HashMap<CardValue, Integer>();
 		
 		for (Card card : hand) {
@@ -300,12 +285,11 @@ public class CardHand {
 		return singleCardValue.getIntValue();
 	}
 	
-	public int findSecondHighestPairValue(NavigableSet<Card> hand) {
-		Iterator<Card> iterator = hand.iterator();
-		return findFirstPairValue(iterator);
+	private int findSecondHighestPairValue(NavigableSet<Card> hand) {
+		return findFirstPairValue(new ArrayList<Card>(hand));
 	}
 	
-	public int findHighestThreesValue(NavigableSet<Card> hand) {
+	private int findHighestThreesValue(NavigableSet<Card> hand) {
 		// We only need to look at index position 3: The card at this position must be included in the set of Three of a Kind
 		int i = 1;
 		Iterator<Card> iterator = hand.iterator();
