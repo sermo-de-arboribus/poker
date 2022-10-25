@@ -193,23 +193,15 @@ public class CardHand {
 	}
 
 	private int compareSecondHighestPairs(CardHand otherHand) {
-		int comparisonResult;
-		int highestRelevantValueForThis;
-		int highestRelevantValueForOther;
-		highestRelevantValueForThis = findSecondHighestPairValue(this.hand);
-		highestRelevantValueForOther = findSecondHighestPairValue(otherHand.hand);
-		comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
-		return comparisonResult;
+		int highestRelevantValueForThis = findSecondHighestPairValue(this.hand);
+		int highestRelevantValueForOther = findSecondHighestPairValue(otherHand.hand);
+		return highestRelevantValueForThis - highestRelevantValueForOther;
 	}
 
 	private int compareTwoHighestPairs(CardHand otherHand) {
-		int comparisonResult;
-		int highestRelevantValueForThis;
-		int highestRelevantValueForOther;
-		highestRelevantValueForThis = findHighestPairValue(this.hand);
-		highestRelevantValueForOther = findHighestPairValue(otherHand.hand);
-		comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
-		return comparisonResult;
+		int highestRelevantValueForThis = findHighestPairValue(this.hand);
+		int highestRelevantValueForOther = findHighestPairValue(otherHand.hand);
+		return highestRelevantValueForThis - highestRelevantValueForOther;
 	}
 	
 	/**
