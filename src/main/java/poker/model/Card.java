@@ -58,11 +58,7 @@ public class Card implements Comparable<Card> {
 		}
 
 		Card otherCard = (Card)otherObj;
-		if(suit == otherCard.suit && value == otherCard.value) {
-			return true;
-		} else {
-			return false;
-		}
+		return suit == otherCard.suit && value == otherCard.value;
 	}
 	
 	@Override

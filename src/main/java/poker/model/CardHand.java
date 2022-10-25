@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import one.util.streamex.StreamEx;
 
 import poker.error.ExpectedSingleCardValueException;
 import poker.error.HandSizeError;
@@ -255,6 +258,13 @@ public class CardHand {
 			}
 		}
 		return pairValue;
+	}
+	
+	public int findFirstPairValueViaStream(NavigableSet<Card> hand) {
+	    return StreamEx.ofSubLists(hand.stream().collect(Collectors.toList()), 2, 1)
+	        .findFirst((subList) -> subList.get(0).getIntValue() == subList.get(1).getIntValue())
+	        .map((subList) -> subList.get(0).getIntValue())
+	        .orElse(0);
 	}
 	
 	public int findHighestPairValue(NavigableSet<Card> hand) {
