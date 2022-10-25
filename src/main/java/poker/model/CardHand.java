@@ -10,6 +10,7 @@ import java.util.NavigableSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
 
 import poker.error.ExpectedSingleCardValueException;
@@ -258,31 +259,14 @@ public class CardHand {
 	}
 	
 	private int findHighestSingleCardValue(NavigableSet<Card> hand) throws ExpectedSingleCardValueException {
-		Map<CardValue, Integer> values = new HashMap<CardValue, Integer>();
-		
-		for (Card card : hand) {
-			
-			CardValue currentValue = card.getCardValue();
-			if(values.containsKey(currentValue)) {
-				values.put(currentValue, values.get(currentValue) + 1);
-			} else {
-				values.put(currentValue, 1);
-			}
-		}
-		
-		Entry<CardValue, Integer> highestSingleCardEntry = values.entrySet()
-			.stream()
-			.filter((entry) -> entry.getValue() == 1)
-			.sorted((a, b) -> b.getKey().getIntValue() - a.getKey().getIntValue())
-			.findFirst()
-			.orElse(null);
-		
-		if(null == highestSingleCardEntry) {
-			throw new ExpectedSingleCardValueException();
-		}
-		
-		CardValue singleCardValue = highestSingleCardEntry.getKey();
-		return singleCardValue.getIntValue();
+	    
+	    return EntryStream.of(
+    	    hand.stream()
+    	        .collect(Collectors.groupingBy(Card::getIntValue, Collectors.counting())))
+	        .filter((entry) -> entry.getValue() == 1)
+	        .map((entry) -> entry.getKey())
+	        .max(Integer::compare)
+	        .orElse(0);
 	}
 	
 	private int findSecondHighestPairValue(NavigableSet<Card> hand) {
