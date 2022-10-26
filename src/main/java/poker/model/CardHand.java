@@ -282,8 +282,8 @@ public class CardHand {
 		if(cards.length == 5) {
 			for(Card card : cards) {
 				hand.add(card);
-				evaluate();
 			}
+			evaluate();
 		} else {
 			throw new HandSizeError(cards.length);
 		}
