@@ -1,19 +1,19 @@
 package poker.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NavigableSet;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
 
-import poker.error.ExpectedSingleCardValueException;
+import java.util.NavigableSet;
+import java.util.TreeSet;
+
 import poker.error.HandSizeError;
 
 /**
@@ -37,12 +37,8 @@ public class CardHand {
 	 * @param card5 card object #5
 	 */
 	public CardHand(final Card card1, final Card card2, final Card card3, final Card card4, final Card card5) {
-		Card[] cards = new Card[5];
-		cards[0] = card1;
-		cards[1] = card2;
-		cards[2] = card3;
-		cards[3] = card4;
-		cards[4] = card5;
+
+		List<Card> cards = Arrays.asList(card1, card2, card3, card4, card5);
 		try {
 			resetHand(cards);
 		} catch (HandSizeError e) {
@@ -57,7 +53,8 @@ public class CardHand {
 	 * @throws HandSizeError is thrown when array has less or more than 5 Card objects
 	 */
 	public CardHand(final Card[] cards) throws HandSizeError {
-		resetHand(cards);
+		List<Card> cardsList = List.of(cards);
+		resetHand(cardsList);
 	}
 	
 	/**
@@ -67,11 +64,54 @@ public class CardHand {
 	 * @throws HandSizeError is thrown when the list has less or more than 5 Card objects
 	 */
 	public CardHand(final List<Card> cards) throws HandSizeError {
-		Card[] cardsArray = cards.toArray(new Card[0]);
-		resetHand(cardsArray);
+		resetHand(cards);
 	}
 	
 	/************************ Public methods ***********************/
+	
+	/**
+	 * Determines the value of the lowest (or only) pair on this hand.
+	 * 
+	 * @return The integer value of the lowest pair on this hand, or 0 if this hand has no pair at all
+	 */
+	public int findLowestPairValue() {
+		return findFirstPairValue(new ArrayList<Card>(hand));
+	}
+	
+	/**
+	 * Determines the value of the highest (or only) pair on this hand.
+	 * 
+	 * @return The integer value of the highest pair on this hand, or 0 if this hand has no pair at all
+	 */
+	public int findHighestPairValue() {
+	    return findFirstPairValue(StreamEx.ofReversed(new ArrayList<Card>(hand)).toList());
+	}
+	
+	/**
+	 * Determines the highest single card's value, where single cards are cards that are not part of
+	 * a pair, a set of threes, or fours.
+	 * 
+	 * @return The value of the highest single card, or 0 if there is none in this hand 
+	 */
+	public int findHighestSingleCardValue() {
+	    
+	    return EntryStream.of(
+    	    hand.stream()
+    	        .collect(Collectors.groupingBy(Card::getIntValue, Collectors.counting())))
+	        .filter((entry) -> entry.getValue() == 1)
+	        .map((entry) -> entry.getKey())
+	        .max(Integer::compare)
+	        .orElse(0);
+	}
+	
+	/**
+	 * Determines the 
+	 * @return
+	 */
+	public int findThreesValue() {
+		// We only need to look at index position 3: The card at this position must be included in the set of Three of a Kind
+		return hand.stream().collect(Collectors.toList()).get(3).getIntValue();
+	}
 	
 	/**
 	 * Returns the highest card in the current hand. If there are several cards with the same highest value, 
@@ -81,77 +121,6 @@ public class CardHand {
 	 */
 	public Card getHighestCard() {
 		return hand.last();
-	}
-	
-	/**
-	 * Compares another hand to this object's hand and returns the winner. Also prints a message about the winning hand to 
-	 * the standard output console.
-	 * 
-	 * @param otherHand The other hand to be ranked against the current object
-	 * @return the winning hand object, or null if no precedence is defined for the two given hands
-	 */
-	public CardHand rankAgainst(CardHand otherHand) {
-		
-		int comparisonResult = this.getRank().compareTo(otherHand.getRank());
-		
-		// if both hands have the same rank, we need to compare again, this time for the relevant highest card values
-		if(comparisonResult == 0) {
-			
-			int highestRelevantValueForThis, highestRelevantValueForOther;
-			
-			switch(this.getRank()) {
-			
-				case PAIR:
-					comparisonResult = compareTwoHighestPairs(otherHand);
-					
-					if (comparisonResult == 0) {
-						comparisonResult = compareHighestSingleCard(otherHand, comparisonResult);	
-					}
-					
-					break;
-					
-				case TWO_PAIRS:
-					
-					comparisonResult = compareTwoHighestPairs(otherHand);
-					
-					if (comparisonResult == 0) {
-						comparisonResult = compareSecondHighestPairs(otherHand);
-						
-						if(comparisonResult == 0) {
-							comparisonResult = compareHighestSingleCard(otherHand, comparisonResult);							
-						}
-					}
-					
-					break;
-					
-				case THREE_OF_A_KIND:
-				case FULL_HOUSE:
-					highestRelevantValueForThis = findHighestThreesValue(this.hand);
-					highestRelevantValueForOther = findHighestThreesValue(otherHand.hand);
-					comparisonResult = highestRelevantValueForThis - highestRelevantValueForOther;
-					break;
-
-				case FOUR_OF_A_KIND:
-
-				comparisonResult = compareTwoHighestPairs(otherHand);					
-					break;
-				
-				// default ranking works for Flush, Straight Flush, Straight, and High Card ranks
-				default:
-					comparisonResult = this.getHighestCard().getIntValue() - otherHand.getHighestCard().getIntValue();
-			}
-		}
-
-		if(comparisonResult > 0) {
-			System.out.println("Hand 1 has won, holding a " + this.getRank() + " with cards " + this.toString() + " against " + otherHand.toString());
-			return this;
-		} else if(comparisonResult < 0) {
-			System.out.println("Hand 2 has won, holding a " + otherHand.getRank() + " with cards " + otherHand.toString() + " against " + this.toString());
-			return otherHand;
-		} else {
-			System.out.println("There is no precedence defined for the two given hands " + this.toString() + " and " + otherHand.toString() + ".\nShould we call it a draw?");
-			return null;
-		}
 	}
 
 	/**
@@ -177,32 +146,6 @@ public class CardHand {
 	}
 	
 	/************************ Private methods *************************/
-	
-	private int compareHighestSingleCard(CardHand otherHand, int comparisonResult) {
-		int highestSingleCardForThis;
-		int highestSingleCardForOther;
-		try {
-			highestSingleCardForThis = findHighestSingleCardValue(this.hand);
-			highestSingleCardForOther = findHighestSingleCardValue(otherHand.hand);
-			comparisonResult = highestSingleCardForThis - highestSingleCardForOther;
-		} catch (ExpectedSingleCardValueException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
-		return comparisonResult;
-	}
-
-	private int compareSecondHighestPairs(CardHand otherHand) {
-		int highestRelevantValueForThis = findSecondHighestPairValue(this.hand);
-		int highestRelevantValueForOther = findSecondHighestPairValue(otherHand.hand);
-		return highestRelevantValueForThis - highestRelevantValueForOther;
-	}
-
-	private int compareTwoHighestPairs(CardHand otherHand) {
-		int highestRelevantValueForThis = findHighestPairValue(this.hand);
-		int highestRelevantValueForOther = findHighestPairValue(otherHand.hand);
-		return highestRelevantValueForThis - highestRelevantValueForOther;
-	}
 	
 	/**
 	 * Contract of this class: This method should be called internally whenever the card set in the `hand` variable changes 
@@ -246,46 +189,14 @@ public class CardHand {
 	        .orElse(0);
 	}
 	
-	private int findHighestPairValue(NavigableSet<Card> hand) {
-	    return findFirstPairValue(StreamEx.ofReversed(new ArrayList<Card>(hand)).toList());
-	}
-	
-	private int findHighestSingleCardValue(NavigableSet<Card> hand) throws ExpectedSingleCardValueException {
-	    
-	    return EntryStream.of(
-    	    hand.stream()
-    	        .collect(Collectors.groupingBy(Card::getIntValue, Collectors.counting())))
-	        .filter((entry) -> entry.getValue() == 1)
-	        .map((entry) -> entry.getKey())
-	        .max(Integer::compare)
-	        .orElse(0);
-	}
-	
-	private int findSecondHighestPairValue(NavigableSet<Card> hand) {
-		return findFirstPairValue(new ArrayList<Card>(hand));
-	}
-	
-	private int findHighestThreesValue(NavigableSet<Card> hand) {
-		// We only need to look at index position 3: The card at this position must be included in the set of Three of a Kind
-		int i = 1;
-		Iterator<Card> iterator = hand.iterator();
-		while(i < 3 && iterator.hasNext()) {
-			iterator.next();
-			i++;
-		}
+	private void resetHand(final List<Card> cards) throws HandSizeError {
 		
-		return iterator.next().getIntValue();
-	}
-	
-	private void resetHand(final Card[] cards) throws HandSizeError {
-		hand.clear();
-		if(cards.length == 5) {
-			for(Card card : cards) {
-				hand.add(card);
-			}
+		if(cards.size() == 5) {
+			hand.clear();
+			hand.addAll(cards);
 			evaluate();
 		} else {
-			throw new HandSizeError(cards.length);
+			throw new HandSizeError(cards.size());
 		}
 	}
 	
@@ -323,5 +234,4 @@ public class CardHand {
 			rank = Rank.HIGH_CARD;
 		}
 	}
-
 }

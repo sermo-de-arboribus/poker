@@ -12,11 +12,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import poker.game.Ranker;
+
 public class CardHandTest {
 
 	@Nested
 	@DisplayName("Tests for the getRank() method")
 	class GetRankTests {
+		
 		@Test
 		void recognizeStraightFlush() {
 			CardSuit suit = CardSuit.C;
@@ -108,6 +111,8 @@ public class CardHandTest {
 	@DisplayName("Testing the rankAgainst(CardHand other) method")
 	class RankAgainstTests {
 		
+		private Ranker ranker = new Ranker();
+		
 		@Test
 		void ensureRankingSequence() {
 			// arrange
@@ -127,7 +132,7 @@ public class CardHandTest {
 				// use == operator to test for object identity
 				CardHand hand1 = hands.get(i-i);
 				CardHand hand2 = hands.get(i);
-				assertTrue(hand1.rankAgainst(hand2) == hand2);
+				assertTrue(ranker.rankHands(hand1, hand2) == hand2);
 			}
 		}
 		
@@ -142,7 +147,7 @@ public class CardHandTest {
 					new Card(CardSuit.H, CardValue._8));
 			
 			// act + assert
-			assertTrue(hand1.rankAgainst(hand2) == hand1);
+			assertTrue(ranker.rankHands(hand1, hand2) == hand1);
 		}
 		
 		@Test
@@ -157,7 +162,7 @@ public class CardHandTest {
 					new Card(CardSuit.D, CardValue._7));
 			
 			// act + assert
-			assertTrue(hand1.rankAgainst(hand2) == hand1);
+			assertTrue(ranker.rankHands(hand1, hand2) == hand1);
 		}
 		
 		@Test
@@ -171,7 +176,7 @@ public class CardHandTest {
 					new Card(CardSuit.S, CardValue._8));
 			
 			// act + assert
-			assertTrue(hand1.rankAgainst(hand2) == hand2);
+			assertTrue(ranker.rankHands(hand1, hand2) == hand2);
 		}
 		
 		@Test
@@ -185,7 +190,7 @@ public class CardHandTest {
 					new Card(CardSuit.S, CardValue._8));
 			
 			// act + assert
-			assertTrue(hand1.rankAgainst(hand2) == hand2);
+			assertTrue(ranker.rankHands(hand1, hand2) == hand2);
 		}
 		
 		@Test
@@ -199,7 +204,7 @@ public class CardHandTest {
 					new Card(CardSuit.D, CardValue._7));
 			
 			// act + assert
-			assertTrue(hand1.rankAgainst(hand2) == hand1);
+			assertTrue(ranker.rankHands(hand1, hand2) == hand1);
 		}
 		
 		@Test
@@ -213,7 +218,7 @@ public class CardHandTest {
 					new Card(CardSuit.H, CardValue.T));
 			
 			// act + assert
-			assertTrue(hand1.rankAgainst(hand2) == hand2);
+			assertTrue(ranker.rankHands(hand1, hand2) == hand2);
 		}
 		
 		@Test
@@ -227,7 +232,7 @@ public class CardHandTest {
 					new Card(CardSuit.H, CardValue._4));
 			
 			// act + assert
-			assertTrue(hand1.rankAgainst(hand2) == hand1);
+			assertTrue(ranker.rankHands(hand1, hand2) == hand1);
 		}
 		
 		@Test
@@ -254,10 +259,10 @@ public class CardHandTest {
 					new Card(CardSuit.H, CardValue._7));
 			
 			// act + assert
-			assertTrue(hand1.rankAgainst(hand2) == hand2);
-			assertTrue(hand1.rankAgainst(hand3) == hand1);
-			assertTrue(hand2.rankAgainst(hand3) == hand2);
-			assertTrue(hand2.rankAgainst(hand4) == hand4);
+			assertTrue(ranker.rankHands(hand1, hand2) == hand2);
+			assertTrue(ranker.rankHands(hand1, hand3) == hand1);
+			assertTrue(ranker.rankHands(hand2, hand3) == hand2);
+			assertTrue(ranker.rankHands(hand2, hand4) == hand4);
 		}
 		
 		@Test
@@ -278,9 +283,9 @@ public class CardHandTest {
 					new Card(CardSuit.H, CardValue._5));
 			
 			// act + assert
-			assertTrue(hand1.rankAgainst(hand2) == hand1);
-			assertTrue(hand2.rankAgainst(hand3) == hand3);
-			assertTrue(hand1.rankAgainst(hand3) == hand3);
+			assertTrue(ranker.rankHands(hand1, hand2) == hand1);
+			assertTrue(ranker.rankHands(hand2, hand3) == hand3);
+			assertTrue(ranker.rankHands(hand1, hand3) == hand3);
 		}
 
 		@Test
@@ -295,7 +300,7 @@ public class CardHandTest {
 					new Card(CardSuit.H, CardValue._8));
 			
 			// act + assert
-			assertTrue(hand1.rankAgainst(hand2) == hand1);
+			assertTrue(ranker.rankHands(hand1, hand2) == hand1);
 		}
 		
 		@Test
@@ -305,7 +310,7 @@ public class CardHandTest {
 			CardHand hand2 = getStraightFlush(CardSuit.D);
 			
 			// act + assert
-			assertNull(hand1.rankAgainst(hand2));
+			assertNull(ranker.rankHands(hand1, hand2));
 		}
 	}
 }

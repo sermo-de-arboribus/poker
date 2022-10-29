@@ -62,6 +62,11 @@ public class Card implements Comparable<Card> {
 	}
 	
 	@Override
+	public int hashCode() {
+		return this.getIntValue() * 53 + this.getCardSuit().hashCode();
+	}
+	
+	@Override
 	public String toString() {
 		return this.getCardSuit().getDescription() + " " + this.getCardValue().getDescription();
 	}
